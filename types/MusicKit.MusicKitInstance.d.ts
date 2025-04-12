@@ -63,7 +63,7 @@ declare namespace MusicKit {
     /**
      * The playback speed.
      */
-    playbackRate: number
+    playbackRate: number;
     /**
      * The current playback progress
      */
@@ -75,16 +75,22 @@ declare namespace MusicKit {
      * @param name The name of the event.
      * @param callback The callback function to invoke when the event occurs.
      */
-    addEventListener(name: string, callback: Function): void;
+    addEventListener<K extends keyof MusicKit.Events>(
+      name: K,
+      callback: (event: MusicKit.Events[K]) => void,
+    ): void;
 
     /**
      * Add a media item to the users library.
      * @param id The id of the media item to add to the library.
      * @param type The type of the media item to add to the library.
-     * 
+     *
      * @returns A promise containing a dictionary of the media item ids that were added to the library.
      */
-    addToLibrary(id: string, type?: string): Promise<{
+    addToLibrary(
+      id: string,
+      type?: string,
+    ): Promise<{
       [type: string]: string[];
     }>;
 
@@ -127,7 +133,10 @@ declare namespace MusicKit {
      * @param name The name of the event.
      * @param callback The callback function to remove.
      */
-    removeEventListener(name: string, callback?: () => any): void;
+    removeEventListener<K extends keyof MusicKit.Events>(
+      name: K,
+      callback?: (event: MusicKit.Events[K]) => void,
+    ): void;
 
     /**
      * Sets the playback point to a specified time.
@@ -192,11 +201,11 @@ declare namespace MusicKit {
      * The previous playback state
      */
     _previousPlaybackState: {
-      autoplayEnabled: boolean
-      playbackMode: number
-      repeatMode: number
-      shuffleMode: number
-      volume: number
+      autoplayEnabled: boolean;
+      playbackMode: number;
+      repeatMode: number;
+      shuffleMode: number;
+      volume: number;
     };
 
     /**
