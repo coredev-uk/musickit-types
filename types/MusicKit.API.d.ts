@@ -1,3 +1,5 @@
+/// <reference path="MusicKit.Player.d.ts" />
+
 declare namespace MusicKit {
   /**
    * An object that represents a unique identifier for a music item.
@@ -39,11 +41,11 @@ declare namespace MusicKit {
     lyrics?: MusicKit.Lyrics;
     credits?: MusicKit.Credit;
     catalog?: Relationship<Playlists>;
-    'personal-recommendation': MusicKit.PersonalRecommendation;
-    'stations': MusicKit.Stations;
-    'music-summaries': MusicKit.ReplaySummary
-    'music-summaries-milestones': MusicKit.ReplayMilestone
-    'editorial-items': MusicKit.EditorialItem
+    "personal-recommendation": MusicKit.PersonalRecommendation;
+    stations: MusicKit.Stations;
+    "music-summaries": MusicKit.ReplaySummary;
+    "music-summaries-milestones": MusicKit.ReplayMilestone;
+    "editorial-items": MusicKit.EditorialItem;
   }
 
   /**
@@ -71,7 +73,7 @@ declare namespace MusicKit {
   interface View<Data> {
     href?: string;
     next?: string;
-    attributes?: {
+    attributes: {
       title: string;
     };
     data: Data[];
@@ -87,9 +89,12 @@ declare namespace MusicKit {
     type: string;
     href: string;
     attributes: Record<string, any>;
-    relationships?: Record<string, Relationship<Resource> | Array<Relationship<Resource>>>;
+    relationships?: Record<
+      string,
+      Relationship<Resource> | Array<Relationship<Resource>>
+    >;
     meta?: Record<string, any>;
-    views?: Record<string, View<Resource>>;
+    views?: Record<string, View<Resource> | Relationship<Resource>>;
   }
 
   /**
@@ -98,7 +103,7 @@ declare namespace MusicKit {
    */
   interface Storefronts extends Resource {
     type: "storefronts";
-    attributes?: {
+    attributes: {
       defaultLanguageTag: string;
       explicitContentPolicy: "allowed" | "opt-in" | "prohibited";
       name: string;
@@ -112,7 +117,7 @@ declare namespace MusicKit {
    */
   interface Genres extends Resource {
     type: "genres";
-    attributes?: {
+    attributes: {
       name: string;
       parentId?: string;
       parentName?: string;
@@ -174,7 +179,7 @@ declare namespace MusicKit {
   interface MusicVideos extends Resource {
     id: MusicItemID;
     type: "music-videos";
-    attributes?: {
+    attributes: {
       albumName?: string;
       artistName: string;
       artwork: Artwork;
@@ -199,12 +204,12 @@ declare namespace MusicKit {
       inLibrary?: boolean;
       inFavorites?: boolean;
     };
-    relationships: {
+    relationships?: {
       albums: Relationship<Albums>;
       genres: Relationship<Genres>;
       library: Relationship<LibraryAlbums>;
       songs: Relationship<Songs>;
-    };
+    } & Record<string, Relationship<Resource> | Array<Relationship<Resource>>>;
     views: {
       "more-by-artist": View<MusicVideos>;
       "more-in-genre": View<MusicVideos>;
@@ -217,7 +222,7 @@ declare namespace MusicKit {
    */
   interface AppleCurators extends Resource {
     type: "apple-curators";
-    attributes?: {
+    attributes: {
       artwork: Artwork;
       editorialNotes?: EditorialNotes;
       kind: "Curator" | "Genre" | "Show";
@@ -226,9 +231,9 @@ declare namespace MusicKit {
       showHostName?: string;
       url: string;
     };
-    relationships: {
+    relationships?: {
       playlists: Relationship<Playlists>;
-    };
+    } & Record<string, Relationship<Resource> | Array<Relationship<Resource>>>;
   }
 
   /**
@@ -237,7 +242,7 @@ declare namespace MusicKit {
    */
   interface Curators extends Resource {
     type: "curator";
-    attributes?: {
+    attributes: {
       artwork: Artwork;
       editorialNotes?: EditorialNotes;
       name: string;
@@ -254,7 +259,7 @@ declare namespace MusicKit {
    */
   interface Stations extends Resource {
     type: "stations";
-    attributes?: {
+    attributes: {
       artwork: Artwork;
       durationInMillis: number;
       editorialNotes: EditorialNotes;
@@ -278,7 +283,7 @@ declare namespace MusicKit {
   interface RecordLabels extends Resource {
     id: MusicItemID;
     type: "record-labels";
-    attributes?: {
+    attributes: {
       artwork: Artwork;
       description: DescriptionAttribute;
       name: string;
@@ -296,7 +301,7 @@ declare namespace MusicKit {
    */
   interface Albums extends Resource {
     type: "albums";
-    attributes?: {
+    attributes: {
       artistName: string;
       artistUrl?: string;
       artwork: Artwork;
@@ -323,13 +328,13 @@ declare namespace MusicKit {
       inLibrary?: boolean;
       inFavorites?: boolean;
     };
-    relationships: {
+    relationships?: {
       artists: Relationship<Artists>;
       genres: Relationship<Genres>;
       tracks: Relationship<MusicVideos | Songs>;
       library: Relationship<LibraryAlbums>;
       "record-labels": Relationship<RecordLabels>;
-    };
+    } & Record<string, Relationship<Resource> | Array<Relationship<Resource>>>;
     views: {
       "appears-on": View<Playlists>;
       "other-versions": View<Albums>;
@@ -344,7 +349,7 @@ declare namespace MusicKit {
    */
   interface LibraryAlbums extends Resource {
     type: "library-albums";
-    attributes?: {
+    attributes: {
       artistName: string;
       artwork: Artwork;
       contentRating?: ContentRating;
@@ -357,11 +362,11 @@ declare namespace MusicKit {
       personalRating?: number;
       inFavorites?: boolean;
     };
-    relationships: {
+    relationships?: {
       artists: Relationship<Artists>;
       catalog: Relationship<Playlists>;
       tracks: Relationship<MusicVideos | Songs>;
-    };
+    } & Record<string, Relationship<Resource> | Array<Relationship<Resource>>>;
   }
 
   /**
@@ -371,7 +376,7 @@ declare namespace MusicKit {
   interface LibrarySongs extends Resource {
     id: MusicItemID;
     type: "library-songs";
-    attributes?: {
+    attributes: {
       albumName: string;
       artistName: string;
       artwork: Artwork;
@@ -416,7 +421,7 @@ declare namespace MusicKit {
   interface LibraryPlaylists extends Resource {
     id: MusicItemID;
     type: "library-playlists" | "library-playlist-folders";
-    attributes?: {
+    attributes: {
       hasCollaboration?: boolean;
       lastModifiedDate: string; // in date-time ISO 8601 format
       trackCount?: number;
@@ -445,7 +450,7 @@ declare namespace MusicKit {
    */
   interface Artists extends Resource {
     type: "artists";
-    attributes?: {
+    attributes: {
       editorialNotes?: EditorialNotes;
       genreNames: string[];
       name: string;
@@ -455,14 +460,14 @@ declare namespace MusicKit {
       inLibrary?: boolean;
       inFavorites?: boolean;
     };
-    relationships: {
+    relationships?: {
       albums: Relationship<Albums>;
       genres: Relationship<Genres>;
       "music-videos": Relationship<MusicVideos>;
       playlists: Relationship<Playlists>;
       station: Relationship<Stations>;
       catalog?: Relationship<Artists>;
-    };
+    } & Record<string, Relationship<Resource> | Array<Relationship<Resource>>>;
     views: {
       "appears-on-albums": View<Albums>;
       "compilation-albums": {
@@ -492,7 +497,7 @@ declare namespace MusicKit {
   interface Playlists extends Resource {
     id: MusicItemID;
     type: "playlists";
-    attributes?: {
+    attributes: {
       lastModifiedDate: string;
       supportsSings: boolean;
       description: DescriptionAttribute;
@@ -507,11 +512,11 @@ declare namespace MusicKit {
       name: string;
       isChart: boolean;
       playlistType:
-      | "editorial"
-      | "external"
-      | "personal-mix"
-      | "replay"
-      | "user-shared";
+        | "editorial"
+        | "external"
+        | "personal-mix"
+        | "replay"
+        | "user-shared";
       editorialVideo?: EditorialVideo;
       editorialNotes?: EditorialNotes;
       versionHash?: string;
@@ -593,7 +598,7 @@ declare namespace MusicKit {
    */
   interface Activities extends Resource {
     type: "activities";
-    attributes?: {
+    attributes: {
       artwork: Artwork;
       editorialNotes?: EditorialNotes;
       name: string;
@@ -610,7 +615,7 @@ declare namespace MusicKit {
    */
   interface PersonalRecommendation extends Resource {
     type: "personal-recommendation";
-    attributes?: {
+    attributes: {
       kind: "music-recommendations" | "recently-played" | "unknown";
       nextUpdateDate: string;
       reason: {
@@ -623,14 +628,14 @@ declare namespace MusicKit {
       display?: {
         kind: string;
         decorations: unknown[];
-      }
+      };
     };
     relationships?: {
       [k: string]: {
         data: Resource[];
         href: string;
-      }
-    }
+      };
+    };
   }
 
   /**
@@ -659,10 +664,10 @@ declare namespace MusicKit {
       genreNames: string[];
       name: string;
     };
-    relationships: {
+    relationships?: {
       curator: Relationship<Curators>;
       tabs: Relationship<EditorialElements>;
-    };
+    } & Record<string, Relationship<Resource> | Array<Relationship<Resource>>>;
   }
 
   /**
@@ -687,12 +692,12 @@ declare namespace MusicKit {
       emphasize?: boolean;
       featureFirstElement?: boolean;
       designBadge?:
-      | "NEW ALBUM"
-      | "UPDATED PLAYLIST"
-      | "LISTEN NOW"
-      | "NEW PLAYLIST"
-      | "NEW RELEASE"
-      | string;
+        | "NEW ALBUM"
+        | "UPDATED PLAYLIST"
+        | "LISTEN NOW"
+        | "NEW PLAYLIST"
+        | "NEW RELEASE"
+        | string;
       displayStyle?: "compact" | "expanded";
       keySwoosh?: "FeaturedPlaylists" | "ArtistsPlaylists" | string;
       doNotFilter?: boolean;
@@ -707,11 +712,11 @@ declare namespace MusicKit {
       description?: string;
     };
     id: "default" | string;
-    relationships: {
+    relationships?: {
       children: Relationship<EditorialElements>;
       contents?: Relationship<Resource>;
       room?: Relationship<Rooms>;
-    };
+    } & Record<string, Relationship<Resource> | Array<Relationship<Resource>>>;
   }
 
   /**
@@ -721,33 +726,32 @@ declare namespace MusicKit {
   interface EditorialItem extends Resource {
     type: "editorial-items";
     attributes: {
-      plainEditorialNotes: EditorialNotes
-      plainEditorialCard: PlainEditorialCard
-      editorialArtwork: EditorialArtwork
-      editorialVideo: EditorialVideo
+      plainEditorialNotes: EditorialNotes;
+      plainEditorialCard: PlainEditorialCard;
+      editorialArtwork: EditorialArtwork;
+      editorialVideo: EditorialVideo;
       link: {
-        url: string
-        target: "internal" | "external"
-        feature: "internal" | "external"
-      }
-      url: string
-    }
+        url: string;
+        target: "internal" | "external";
+        feature: "internal" | "external";
+      };
+      url: string;
+    };
     meta?: {
       editorialCard: string;
-    }
+    };
   }
 
   interface PlainEditorialCard {
     [key: string]: {
-      kind: EditorialArtworkTypes
+      kind: EditorialArtworkTypes;
       display: {
-        decorations: 'gradient' | unknown[]
-      }
-      plainEditorialNotes: EditorialNotes
-      editorialArtwork: EditorialArtwork
-      editorialVideo: EditorialVideo
-
-    }
+        decorations: "gradient" | unknown[];
+      };
+      plainEditorialNotes: EditorialNotes;
+      editorialArtwork: EditorialArtwork;
+      editorialVideo: EditorialVideo;
+    };
   }
 
   /**
@@ -770,15 +774,15 @@ declare namespace MusicKit {
     type: "role-categories";
     attributes: {
       kind:
-      | "performer"
-      | "composer-and-lyrics"
-      | "production-and-engineering"
-      | string;
+        | "performer"
+        | "composer-and-lyrics"
+        | "production-and-engineering"
+        | string;
       title: string;
     };
-    relationships: {
+    relationships?: {
       "credit-artists": Relationship<CreditArtist>;
-    };
+    } & Record<string, Relationship<Resource> | Array<Relationship<Resource>>>;
   }
 
   /**
@@ -840,7 +844,7 @@ declare namespace MusicKit {
   interface ReplaySummary extends Resource {
     type: "music-summaries";
     attributes: {
-      period: 'year' | 'month';
+      period: "year" | "month";
       year: number;
       month?: number;
       topSongCount: number;
@@ -851,19 +855,19 @@ declare namespace MusicKit {
       uniqueArtistCount: number;
       uniquePlaylistCount: number;
       uniqueSongCount: number;
-    }
+    };
     topGenres: {
       genre: string;
       count: number;
-    }[]
+    }[];
     views: {
-      'top-albums': Relationship<ReplayItemSummary>;
-      'top-artists': Relationship<ReplayItemSummary>;
-      'top-songs': Relationship<ReplayItemSummary>;
-    }
+      "top-albums": Relationship<ReplayItemSummary>;
+      "top-artists": Relationship<ReplayItemSummary>;
+      "top-songs": Relationship<ReplayItemSummary>;
+    };
     relationships: {
       playlist?: Relationship<Playlists>;
-    }
+    };
   }
 
   /**
@@ -876,13 +880,13 @@ declare namespace MusicKit {
       listenTimeInMinutes: number;
       dateReached: string;
       value: number;
-      kind: 'listen-time' | 'artist' | 'song';
-    }
+      kind: "listen-time" | "artist" | "song";
+    };
     relationships: {
-      'top-albums': Relationship<Albums>;
-      'top-artists': Relationship<Artists>;
-      'top-songs': Relationship<Songs>;
-    }
+      "top-albums": Relationship<Albums>;
+      "top-artists": Relationship<Artists>;
+      "top-songs": Relationship<Songs>;
+    };
   }
 
   /**
@@ -890,32 +894,33 @@ declare namespace MusicKit {
    * @undocumented
    */
   interface ReplayItemSummary extends Resource {
-    type: 'song-period-summaries' | 'artist-period-summaries' | 'album-period-summaries';
+    type:
+      | "song-period-summaries"
+      | "artist-period-summaries"
+      | "album-period-summaries";
     attributes: {
       firstPlayed: string;
       lastPlayed: string;
       playCount: number;
       listenTimeInMinutes?: number;
-    }
-    relationships: {
+    };
+    relationships?: {
       song?: Relationship<Songs>;
       artist?: Relationship<Artists>;
       album?: Relationship<Albums>;
-    }
+    } & Record<string, Relationship<Resource> | Array<Relationship<Resource>>>;
   }
-
 
   /**
    * An object that represents a suggestion returned from search calls
    */
   interface Suggestion {
     displayTerm?: string;
-    kind: 'terms' | 'topResults';
+    kind: "terms" | "topResults";
     searchTerm?: string;
     source?: string;
-    content?: MusicKit.Resource
+    content?: MusicKit.Resource;
   }
-
 
   type GenericAudioProperty = {
     beginning: number;
@@ -969,16 +974,16 @@ declare namespace MusicKit {
   }
 
   /**
-   * Artwork kinds for a music item. 
+   * Artwork kinds for a music item.
    * - br: Artwork blur map(ish)
    * - vf: Used for Artist banners
    */
-  type ArtworkKinds = 'cc' | 'sr' | 'bb' | 'br' | 'vf'
-  
+  type ArtworkKinds = "cc" | "sr" | "bb" | "br" | "vf";
+
   /**
    * The format of the artwork for a music item.
    */
-  type ArtworkFormats = 'jpg' | 'jpeg' | 'png' | 'webp' | 'tiff' | 'svg';
+  type ArtworkFormats = "jpg" | "jpeg" | "png" | "webp" | "tiff" | "svg";
 
   /**
    * The type of editorial artwork for a music item.
@@ -1082,10 +1087,10 @@ declare namespace MusicKit {
     "v1/me/library/playlists/*": MusicKit.Playlists[];
 
     "v1/me/library/search":
-    | MusicKit.Songs[]
-    | MusicKit.Albums[]
-    | MusicKit.Artists[]
-    | MusicKit.Playlists[];
+      | MusicKit.Songs[]
+      | MusicKit.Albums[]
+      | MusicKit.Artists[]
+      | MusicKit.Playlists[];
 
     "v1/storefronts": MusicKit.Storefronts[];
 
@@ -1118,11 +1123,11 @@ declare namespace MusicKit {
       next: string;
       meta: {
         total: number;
-        latestYear: number,
-        isEndOfYear: boolean
+        latestYear: number;
+        isEndOfYear: boolean;
         metrics?: {
           dataSetId: string;
-        }
+        };
       };
     };
     request: unknown;
@@ -1166,13 +1171,13 @@ declare namespace MusicKit {
     music<T extends keyof v3MusicRoutes>(
       route: T | string,
       parameters?: QueryParameters,
-      options?: QueryOptions
+      options?: QueryOptions,
     ): Promise<QueryResponse<v3MusicRoutes[T] | any>>;
 
     podcasts<T extends keyof v3PodcastRoutes>(
       route: T | string,
       parameters?: QueryParameters,
-      options?: QueryOptions
+      options?: QueryOptions,
     ): Promise<QueryResponse<v3PodcastRoutes[T] | any>>;
   }
 
@@ -1210,7 +1215,7 @@ declare namespace MusicKit {
      */
     activities(
       ids: string[],
-      parameters?: QueryParameters
+      parameters?: QueryParameters,
     ): Promise<Activities[]>;
 
     /**
@@ -1263,7 +1268,7 @@ declare namespace MusicKit {
      */
     appleCurators(
       ids: string[],
-      parameters?: QueryParameters
+      parameters?: QueryParameters,
     ): Promise<AppleCurators[]>;
 
     /**
@@ -1293,7 +1298,7 @@ declare namespace MusicKit {
      */
     charts(
       types: string[],
-      parameters?: QueryParameters
+      parameters?: QueryParameters,
     ): Promise<{
       results: {
         albums: Array<SearchChartResult<Albums>>;
@@ -1368,7 +1373,7 @@ declare namespace MusicKit {
      */
     musicVideos(
       ids: string[],
-      parameters?: QueryParameters
+      parameters?: QueryParameters,
     ): Promise<MusicVideos[]>;
 
     /**
@@ -1389,7 +1394,7 @@ declare namespace MusicKit {
      */
     playlists(
       ids: string[],
-      parameters?: QueryParameters
+      parameters?: QueryParameters,
     ): Promise<Playlists[]>;
 
     /**
@@ -1409,7 +1414,7 @@ declare namespace MusicKit {
      */
     recommendation(
       id: string,
-      parameters?: QueryParameters
+      parameters?: QueryParameters,
     ): Promise<PersonalRecommendation>;
 
     /**
@@ -1421,7 +1426,7 @@ declare namespace MusicKit {
      */
     recommendations(
       ids: string[],
-      parameters?: QueryParameters
+      parameters?: QueryParameters,
     ): Promise<PersonalRecommendation[]>;
 
     /**
@@ -1433,7 +1438,7 @@ declare namespace MusicKit {
      */
     search(
       term: string,
-      parameters?: QueryParameters
+      parameters?: QueryParameters,
     ): Promise<{
       results: {
         activities?: SearchResult<Activities>;
@@ -1472,7 +1477,7 @@ declare namespace MusicKit {
      */
     searchHints(
       term: string,
-      parameters?: QueryParameters
+      parameters?: QueryParameters,
     ): Promise<{
       results: {
         terms: string[];
@@ -1527,7 +1532,7 @@ declare namespace MusicKit {
      */
     storefronts(
       ids: string[],
-      parameters?: QueryParameters
+      parameters?: QueryParameters,
     ): Promise<Storefronts[]>;
   }
 }

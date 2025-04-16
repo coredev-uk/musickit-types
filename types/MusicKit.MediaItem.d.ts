@@ -1,5 +1,4 @@
 declare namespace MusicKit {
-
   /**
    * The attributes for the media item.
    */
@@ -128,7 +127,6 @@ declare namespace MusicKit {
      */
     audioLocale?: string;
 
-
     /**
      * Undocumented Items, not in the Apple Music API docs, and don't really know what they are.
      * @undocumented
@@ -149,11 +147,11 @@ declare namespace MusicKit {
     audioTraits?: string[];
     isChart?: boolean;
     playlistType?:
-    | "editorial"
-    | "external"
-    | "personal-mix"
-    | "replay"
-    | "user-shared";
+      | "editorial"
+      | "external"
+      | "personal-mix"
+      | "replay"
+      | "user-shared";
     editorialVideo?: EditorialVideo;
     versionHash?: string;
     trackTypes?: Array<"music-videos" | "songs">;
@@ -211,7 +209,6 @@ declare namespace MusicKit {
      */
     prepareToPlay(): Promise<void>;
 
-
     /**
      * The URL to the media asset.
      */
@@ -230,7 +227,7 @@ declare namespace MusicKit {
     /**
      * The ID for the iCloud item - only applies for uploaded items.
      */
-    cloudId: string
+    cloudId: string;
 
     /**
      * The content type for the media item.
