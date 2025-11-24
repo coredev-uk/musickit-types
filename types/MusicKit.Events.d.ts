@@ -6,7 +6,7 @@ declare namespace MusicKit {
     /**
      * A notification name indicating a change in the authorization status.
      */
-    authorizationStatusDidChange: { authorizationStatus: AuthStatus[keyof AuthStatus] };
+    authorizationStatusDidChange: { authorizationStatus: AuthStatus };
     /**
      * A notification name indicating an upcoming change in the authorization status.
      */

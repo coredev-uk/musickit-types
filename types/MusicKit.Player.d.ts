@@ -26,14 +26,6 @@ declare namespace MusicKit {
   type PlayerRepeatMode = 0 | 1 | 2;
   type PlayerShuffleMode = 0 | 1;
   type MediaItemPosition = number;
-  type MediaItemFlavors = [
-    "30:cbcp256",
-    "34:cbcp64",
-    "28:ctrp256",
-    "32:ctrp64",
-    "37:ibhp256",
-    "38:ibhp64"
-  ];
 
   interface MediaItemAsset {
     URL: string;
@@ -41,7 +33,7 @@ declare namespace MusicKit {
     chunks: { chunkSize: number; hashes: string[] };
     downloadKey: string;
     "file-size": number;
-    flavor: keyof MediaItemFlavors;
+    flavor: "30:cbcp256" | "34:cbcp64" | "28:ctrp256" | "32:ctrp64" | "37:ibhp256" | "38:ibhp64";
     md5: string;
     metadata: {
       composerId: string;

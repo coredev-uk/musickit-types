@@ -12,13 +12,48 @@ declare namespace MusicKit {
    * A nil value means no rating is available for this resource.
    * [MusicKit Swift Documentation](https://developer.apple.com/documentation/musickit/contentrating)
    */
-  type ContentRating = "clean" | "explicit" | null;
+  type ContentRating = "clean" | "explicit";
 
   /**
-   * Resource tags that can help understand a resource.
-   * Currently, only 'favorited' is supported. (afaik)
+   * Base interface for all Apple Music API resources.
    */
-  type Tags = ["favorited"];
+  interface BaseResource {
+    id: string;
+    type: string;
+    href: string;
+    attributes: Record<string, any>;
+    relationships?: Record<string, Relationship<Resource> | Array<Relationship<Resource>>>;
+    meta?: Record<string, any>;
+    views?: Record<string, View<Resource> | Relationship<Resource>>;
+  }
+
+  /**
+   * Base interface for media-type resources with common attributes.
+   */
+  interface BaseMediaResource extends BaseResource {
+    attributes: {
+      name: string;
+      artistName: string;
+      artwork: Artwork;
+      genreNames: string[];
+      contentRating?: ContentRating;
+      url: string;
+      personalRating?: number;
+      inLibrary?: boolean;
+      inFavorites?: boolean;
+    };
+  }
+
+  /**
+   * Base interface for library resources with additional library-specific attributes.
+   */
+  interface BaseLibraryResource extends BaseResource {
+    attributes: {
+      dateAdded?: string;
+      personalRating?: number;
+      inFavorites?: boolean;
+    };
+  }
 
   /**
    * The resource map for all resources from the Apple Music API with their respective types.
@@ -84,18 +119,7 @@ declare namespace MusicKit {
    * A resource—such as an album, song, or playlist.
    * [MusicKit Swift Documentation](https://developer.apple.com/documentation/applemusicapi/resource)
    */
-  interface Resource {
-    id: string;
-    type: string;
-    href: string;
-    attributes: Record<string, any>;
-    relationships?: Record<
-      string,
-      Relationship<Resource> | Array<Relationship<Resource>>
-    >;
-    meta?: Record<string, any>;
-    views?: Record<string, View<Resource> | Relationship<Resource>>;
-  }
+  interface Resource extends BaseResource {}
 
   /**
    * A resource object that represents a storefront, an Apple Music and iTunes Store territory that the content is available in.
@@ -306,7 +330,6 @@ declare namespace MusicKit {
       artistUrl?: string;
       artwork: Artwork;
       contentRating?: ContentRating;
-      Possible?: ContentRating;
       copyright?: string;
       editorialNotes?: EditorialNotes;
       genreNames: string[];
@@ -347,18 +370,13 @@ declare namespace MusicKit {
    * A resource object that represents a library album.
    * [MusicKit Swift Documentation](https://developer.apple.com/documentation/applemusicapi/libraryalbums/)
    */
-  interface LibraryAlbums extends Resource {
+  interface LibraryAlbums extends Albums {
     type: "library-albums";
-    attributes: {
-      artistName: string;
-      artwork: Artwork;
-      contentRating?: ContentRating;
+    attributes: Albums['attributes'] & {
       dateAdded?: string;
-      name: string;
-      playParams?: PlayParameters;
+      // Library albums don't have some catalog-specific fields
       releaseDate?: string;
       trackCount: number;
-      genreNames: string[];
       personalRating?: number;
       inFavorites?: boolean;
     };
@@ -367,39 +385,18 @@ declare namespace MusicKit {
       catalog: Relationship<Playlists>;
       tracks: Relationship<MusicVideos | Songs>;
     } & Record<string, Relationship<Resource> | Array<Relationship<Resource>>>;
+    // Remove some catalog-specific views that don't apply to library albums
+    views?: undefined;
   }
 
   /**
    * A resource object that represents a library song.
    * [MusicKit Swift Documentation](https://developer.apple.com/documentation/applemusicapi/librarysongs/)
    */
-  interface LibrarySongs extends Resource {
-    id: MusicItemID;
+  interface LibrarySongs extends Songs {
     type: "library-songs";
-    attributes: {
-      albumName: string;
-      artistName: string;
-      artwork: Artwork;
-      attribution?: string;
-      composerName?: string;
-      contentRating?: ContentRating;
-      discNumber?: number;
-      durationInMillis: number;
-      editorialNotes?: EditorialNotes;
-      genreNames: string[];
-      hasLyrics: boolean;
-      isrc?: string;
-      movementCount?: number;
-      movementName?: string;
-      movementNumber?: number;
-      name: string;
-      playParams?: PlayParameters;
-      previews: Preview[];
-      releaseDate?: string;
-      trackNumber?: number;
-      url: string;
-      workName?: string;
-      artistUrl?: string;
+    attributes: Songs['attributes'] & {
+      // Library songs have all the same attributes as catalog songs
       personalRating?: number;
       inFavorites?: boolean;
     };
@@ -412,6 +409,8 @@ declare namespace MusicKit {
       library?: Relationship<LibraryAlbums>;
       "music-videos"?: Relationship<MusicVideos>;
     };
+    // Library songs don't have views
+    views?: undefined;
   }
 
   /**
@@ -422,12 +421,15 @@ declare namespace MusicKit {
     id: MusicItemID;
     type: "library-playlists" | "library-playlist-folders";
     attributes: {
+      // Library-specific attributes
       hasCollaboration?: boolean;
       lastModifiedDate: string; // in date-time ISO 8601 format
       trackCount?: number;
       canDelete: boolean;
       canEdit: boolean;
       dateAdded: string;
+      
+      // Common playlist attributes
       description: DescriptionAttribute;
       artwork?: Artwork;
       hasCatalog: boolean;
@@ -441,7 +443,10 @@ declare namespace MusicKit {
       catalog: Relationship<Playlists>;
       tracks: Relationship<MusicVideos | Songs>;
     };
+    // Internal property used by some applications
     parent: string; // @NOTE: This is not officially used. Just internally used in Cider.
+    // Library playlists don't have the same views as catalog playlists
+    views?: undefined;
   }
 
   /**
@@ -521,7 +526,7 @@ declare namespace MusicKit {
       editorialNotes?: EditorialNotes;
       versionHash?: string;
       trackTypes: Array<"music-videos" | "songs">;
-      tags?: Tags;
+      tags?: ["favorited"];
       personalRating?: number;
       inLibrary?: boolean;
       inFavorites?: boolean;
@@ -816,24 +821,51 @@ declare namespace MusicKit {
   interface AudioAnalysis extends Resource {
     type: "audio-analysis";
     attributes: {
-      acousticness: GenericAudioProperty;
+      acousticness: {
+        beginning: number;
+        ending: number;
+        main: number;
+      };
       beats: {
         barsInMilliseconds: number[];
         beatsInMilliseconds: number[];
       };
-      bpm: GenericAudioProperty & {
+      bpm: {
+        beginning: number;
+        ending: number;
+        main: number;
         percentDeviation: number;
       };
-      danceability: GenericAudioProperty;
-      energy: GenericAudioProperty;
+      danceability: {
+        beginning: number;
+        ending: number;
+        main: number;
+      };
+      energy: {
+        beginning: number;
+        ending: number;
+        main: number;
+      };
       key: {
         beginning: { tonic: string; mode: string };
         ending: { tonic: string; mode: string };
         main: { tonic: string; mode: string };
       };
-      loudness: DetailedAudioProperty;
-      melodicness: GenericAudioProperty;
-      valence: GenericAudioProperty;
+      loudness: {
+        beginning: { peak: number; range: number; value: number };
+        ending: { peak: number; range: number; value: number };
+        main: { peak: number; range: number; value: number };
+      };
+      melodicness: {
+        beginning: number;
+        ending: number;
+        main: number;
+      };
+      valence: {
+        beginning: number;
+        ending: number;
+        main: number;
+      };
     };
   }
 
@@ -921,18 +953,6 @@ declare namespace MusicKit {
     source?: string;
     content?: MusicKit.Resource;
   }
-
-  type GenericAudioProperty = {
-    beginning: number;
-    ending: number;
-    main: number;
-  };
-
-  type DetailedAudioProperty = {
-    beginning: { peak: number; range: number; value: number };
-    ending: { peak: number; range: number; value: number };
-    main: { peak: number; range: number; value: number };
-  };
 
   /**
    * An object that represents editorial notes.
@@ -1049,12 +1069,18 @@ declare namespace MusicKit {
     long?: string;
   }
 
+  /**
+   * Generic search result interface.
+   */
   interface SearchResult<T> {
     data: T[];
     href?: string;
     next?: string;
   }
 
+  /**
+   * Generic search chart result interface.
+   */
   interface SearchChartResult<T> {
     chart: string;
     data: T[];

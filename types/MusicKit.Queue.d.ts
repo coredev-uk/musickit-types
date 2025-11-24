@@ -1,20 +1,6 @@
 declare namespace MusicKit {
 
     /**
-     * A standard queue item
-     */
-    interface QueueItems {
-        /**
-         * Whether the item is an autoplay item or not.
-         */
-        isAutoplay: boolean;
-        /**
-         * The media item.
-         */
-        item: MediaItem;
-    }
-
-    /**
      * An array of media items to be played.
      * [MusicKit.js Documentation](https://js-cdn.music.apple.com/musickit/v3/docs/index.html?path=/docs/reference-javascript-queue--page)
      */
@@ -58,7 +44,16 @@ declare namespace MusicKit {
         /**
          * The queue items but with some extra properties.
          */
-        _queueItems: QueueItems[];
+        _queueItems: Array<{
+            /**
+             * Whether the item is an autoplay item or not.
+             */
+            isAutoplay: boolean;
+            /**
+             * The media item.
+             */
+            item: MediaItem;
+        }>;
         /**
          * Reindexes the queue.
          */

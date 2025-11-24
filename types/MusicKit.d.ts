@@ -45,19 +45,17 @@ declare namespace MusicKit {
 
   const __log: Logger;
 
-  interface AuthStatus {
-    NOT_DETERMINED: 0;
-    DENIED: 1;
-    RESTRICTED: 2;
-    AUTHORIZED: 3;
+  enum AuthStatus {
+    NOT_DETERMINED = 0,
+    DENIED = 1,
+    RESTRICTED = 2,
+    AUTHORIZED = 3
   }
-
-  type logLevels = 'TRACE' | 'DEBUG' | 'INFO' | 'WARN' | 'ERROR';
 
   interface Logger {
     clearLoggingLevels(): void;
     getLogger(): unknown;
-    setLoggingLevels(level: logLevels, show: boolean): void;
+    setLoggingLevels(level: 'TRACE' | 'DEBUG' | 'INFO' | 'WARN' | 'ERROR', show: boolean): void;
   }
 
   /**
