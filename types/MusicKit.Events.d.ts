@@ -1,142 +1,289 @@
 declare namespace MusicKit {
   /**
-   * A dictionary containing events for a MusicKit instance.
+   * Event definitions for MusicKit instance notifications.
+   * 
+   * This interface maps event names to their corresponding payload types.
+   * Use these events to respond to changes in playback state, authorization,
+   * user interactions, and other MusicKit operations.
+   * 
+   * @example
+   * ```typescript
+   * musicKit.addEventListener('playbackStateDidChange', (event) => {
+   *   console.log('Playback state changed to:', event.state);
+   * });
+   * ```
    */
   interface Events {
     /**
-     * A notification name indicating a change in the authorization status.
+     * Fired when the user's Apple Music authorization status changes.
+     * 
+     * This event occurs when a user grants, denies, or revokes permission
+     * to access their Apple Music account.
      */
     authorizationStatusDidChange: { authorizationStatus: AuthStatus };
+
     /**
-     * A notification name indicating an upcoming change in the authorization status.
+     * Fired before the authorization status is about to change.
+     * 
+     * This event allows you to prepare your UI for authorization changes
+     * before they occur.
      */
     authorizationStatusWillChange: unknown;
+
     /**
-     * A notification name indicating a user is eligible for a subscribe view.
+     * Fired when a user is eligible to see Apple Music subscription offers.
+     * 
+     * Use this event to display subscription prompts or upgrade offers
+     * at appropriate times.
      */
     eligibleForSubscribeView: unknown;
+
     /**
-     * A notification name indicating MusicKit JS is loaded.
+     * Fired when the MusicKit library has finished loading.
+     * 
+     * This event indicates that all MusicKit APIs are ready for use.
      */
     loaded: unknown;
+
     /**
-     * A notification name indicating the player has obtained enough data for
-     * playback to start.
+     * Fired when enough audio data has been buffered to begin playback.
+     * 
+     * This event indicates that the player has sufficient data to start
+     * playing without immediate buffering interruptions.
      */
     mediaCanPlay: unknown;
+
     /**
-     * A notification name indicating that the currently-playing media item has
-     * changed.
+     * Fired after the currently playing media item has changed.
+     * 
+     * This event provides the new media item that is now active.
      */
     mediaItemStateDidChange: MediaItem;
+
     /**
-     * A notification name indicating the currently-playing media item is about
-     * to change.
+     * Fired before the currently playing media item is about to change.
+     * 
+     * This event provides the media item that will become active.
      */
     mediaItemStateWillChange: MediaItem;
+
     /**
-     * A notification name indicating that the player has thrown an error during
-     * playback.
+     * Fired when a playback error occurs.
+     * 
+     * This event provides error information when playback fails due to
+     * network issues, DRM problems, or other playback-related errors.
      */
     mediaPlaybackError: { message: string };
+
     /**
-     * A notification name indicating the media item's metadata has finished
-     * loading.
+     * Fired when media item metadata has finished loading.
+     * 
+     * This event occurs when additional metadata (like lyrics, artwork,
+     * or extended attributes) becomes available for the current item.
      */
     metadataDidChange: unknown;
+
     /**
-     * A notification indicating the playback bit rate has changed.
+     * Fired when the audio playback bitrate changes.
+     * 
+     * This event indicates quality changes due to network conditions
+     * or user preferences.
      */
     playbackBitrateDidChange: { bitrate: number };
+
     /**
-     * A notification name indicating the current playback duration changed.
+     * Fired when the total duration of the current media item changes.
+     * 
+     * This typically occurs when transitioning between items or when
+     * duration metadata becomes available.
      */
     playbackDurationDidChange: unknown;
+
     /**
-     * Buffering progress changed.
+     * Fired when the amount of buffered audio data changes.
+     * 
+     * Use this event to display buffer progress indicators in your UI.
      */
     bufferedProgressDidChange: { progress: number };
+
     /**
-     * A notification name indicating the current playback progress changed.
+     * Fired when playback progress updates during playback.
+     * 
+     * This event fires regularly during playback to indicate how much
+     * of the current item has been played.
      */
     playbackProgressDidChange: { progress: number };
+
     /**
-     * A notification indicating the playback state has changed.
+     * Fired after the playback state changes.
+     * 
+     * This event indicates transitions between playing, paused, stopped,
+     * loading, and other playback states.
      */
-    playbackStateDidChange: { nowPlayingItem: MusicKit.MediaItem; oldState: PlaybackStates; state: PlaybackStates };
+    playbackStateDidChange: { 
+      /** The currently active media item. */
+      nowPlayingItem: MusicKit.MediaItem; 
+      /** The previous playback state. */
+      oldState: PlaybackStates; 
+      /** The new current playback state. */
+      state: PlaybackStates 
+    };
+
     /**
-     * A notification indicating the playback state is about to be changed.
+     * Fired before the playback state is about to change.
+     * 
+     * This event allows you to prepare your UI for playback state
+     * transitions before they occur.
      */
-    playbackStateWillChange: { nowPlayingItem: MusicKit.MediaItem; oldState: PlaybackStates; state: PlaybackStates };
+    playbackStateWillChange: { 
+      /** The currently active media item. */
+      nowPlayingItem: MusicKit.MediaItem; 
+      /** The current playback state. */
+      oldState: PlaybackStates; 
+      /** The playback state that will become active. */
+      state: PlaybackStates 
+    };
+
     /**
-     * A notification indicating that a playback target's availability has changed.
+     * Fired when AirPlay or other playback target availability changes.
+     * 
+     * This event indicates when external playback devices (like AirPlay
+     * speakers) become available or unavailable.
      */
     playbackTargetAvailableDidChange: unknown;
+
     /**
-     * A notification name indicating the current playback time has changed.
+     * Fired when the current playback time position changes.
+     * 
+     * This event provides detailed timing information about the current
+     * playback position and remaining time.
      */
-    playbackTimeDidChange: { currentPlaybackDuration: number; currentPlaybackTime: number; currentPlaybackTimeRemaining: number; };
+    playbackTimeDidChange: { 
+      /** Total duration of the current item in seconds. */
+      currentPlaybackDuration: number; 
+      /** Current playback position in seconds. */
+      currentPlaybackTime: number; 
+      /** Remaining time in seconds. */
+      currentPlaybackTimeRemaining: number; 
+    };
+
     /**
-     * A notification name indicating the player volume has changed.
+     * Fired when the player volume changes.
+     * 
+     * This event occurs when the user adjusts volume through your UI
+     * or system controls.
      */
     playbackVolumeDidChange: Event;
+
     /**
-     * A notification name indicating the playback has started in another context
-     * on your domain, and the current player has stopped playback.
+     * Fired when another MusicKit player becomes primary.
+     * 
+     * This event occurs when playback starts in another browser tab or
+     * application, causing this instance to become secondary.
      */
     primaryPlayerDidChange: unknown;
+
     /**
-     * A notification name indicating that the items in the current playback
-     * queue have changed.
+     * Fired when the playback queue contents change.
+     * 
+     * This event occurs when items are added, removed, or reordered
+     * in the playback queue.
      */
     queueItemsDidChange: MediaItem[];
+
     /**
-     * A notification name indicating that the current queue position has changed.
+     * Fired when the current position in the playback queue changes.
+     * 
+     * This event occurs when skipping tracks or manually changing
+     * the queue position.
      */
-    queuePositionDidChange: { oldPosition: number; position: number };
+    queuePositionDidChange: { 
+      /** The previous queue position. */
+      oldPosition: number; 
+      /** The new queue position. */
+      position: number 
+    };
+
     /**
-     * A notification name indicating a change in the storefront country code.
+     * Fired when the user's storefront country code changes.
+     * 
+     * This event occurs when the detected or configured regional
+     * storefront changes, affecting available content.
      */
     storefrontCountryCodeDidChange: unknown;
+
     /**
-     * A notification name indicating that the device's inferred storefront
-     * identifier changed.
+     * Fired when the storefront identifier changes.
+     * 
+     * This event indicates changes to the iTunes Store region,
+     * which affects content availability and pricing.
      */
     storefrontIdentifierDidChange: unknown;
+
     /**
-     * A notification name indicating the user token changed.
+     * Fired when the user's authentication token changes.
+     * 
+     * This event occurs during login, logout, or token refresh operations.
      */
     userTokenDidChange: { userToken: string };
+
     /**
-     * A notification name indicating the currently playing item has changed.
+     * Fired when the currently playing item changes.
+     * 
+     * This is similar to `mediaItemStateDidChange` but provides the item
+     * in a different payload format.
      */
     nowPlayingItemDidChange: { item: MediaItem };
+
     /**
-     * A notification name indicating if the repeat mode did change.
+     * Fired when the repeat mode setting changes.
+     * 
+     * This event indicates changes between no repeat, repeat all,
+     * and repeat one modes.
      */
     repeatModeDidChange: PlayerRepeatMode;
+
     /**
-     * A notification name indicating if the shuffle mode did change.
+     * Fired when the shuffle mode setting changes.
+     * 
+     * This event indicates when shuffle is enabled or disabled.
      */
     shuffleModeDidChange: PlayerShuffleMode;
+
     /**
-     * A notification name indicating if the autoplay mode did change.
+     * Fired when the autoplay setting changes.
+     * 
+     * This event indicates when automatic playlist continuation
+     * is enabled or disabled.
      */
     autoplayEnabledDidChange: boolean;
+
     /**
-     * The timed metadata changed.
+     * Fired when timed metadata is received during playback.
+     * 
+     * This event provides synchronized metadata like chapter information,
+     * lyrics timing, or other time-based data embedded in the audio stream.
      */
     timedMetadataDidChange: {
+      /** Album name from the metadata. */
       album: string;
+      /** Binary metadata blob if available. */
       blob: Blob;
+      /** Array of related links with descriptions. */
       links: { description: string, url: string }[];
+      /** Performer or artist name from the metadata. */
       performer: string;
+      /** Storefront-specific Adam IDs for the content. */
       storefrontAdamIds: {[id: string]: string};
+      /** Track or content title from the metadata. */
       title: string;
     };
 
     /**
-     * A notification name indicating that the media element has been created.
+     * Fired when the underlying HTML media element is created.
+     * 
+     * This event provides access to the native audio element used
+     * for playback, useful for advanced audio manipulation.
      */
     mediaElementCreated: { mediaElement: unknown };
   }

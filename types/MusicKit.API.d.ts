@@ -2,55 +2,119 @@
 
 declare namespace MusicKit {
   /**
-   * An object that represents a unique identifier for a music item.
-   * [MusicKit Swift Documentation](https://developer.apple.com/documentation/musickit/musicitemid)
+   * A unique identifier for any music item in the Apple Music catalog or user library.
+   * 
+   * These IDs are used throughout the Apple Music API to reference specific
+   * songs, albums, playlists, and other content. IDs are typically persistent
+   * and can be stored for later use.
+   * 
+   * @see [MusicKit Swift Documentation](https://developer.apple.com/documentation/musickit/musicitemid)
    */
   type MusicItemID = string;
 
   /**
-   * The rating of the content that potentially plays while playing a resource.
-   * A nil value means no rating is available for this resource.
-   * [MusicKit Swift Documentation](https://developer.apple.com/documentation/musickit/contentrating)
+   * Content rating classification for media items.
+   * 
+   * Indicates whether content contains explicit lyrics or themes. This information
+   * helps apps implement appropriate content filtering and parental controls.
+   * 
+   * - `"clean"` - Content is suitable for all audiences
+   * - `"explicit"` - Content contains explicit lyrics or adult themes
+   * - Content with no rating information will have this property undefined
+   * 
+   * @see [MusicKit Swift Documentation](https://developer.apple.com/documentation/musickit/contentrating)
    */
   type ContentRating = "clean" | "explicit";
 
   /**
-   * Base interface for all Apple Music API resources.
+   * User's personal rating/preference for a music item.
+   * 
+   * This rating system allows users to express their preference for content,
+   * which affects algorithmic recommendations and filtering.
+   * 
+   * @example
+   * ```typescript
+   * // Like a song
+   * const rating: PersonalRating = 1;
+   * 
+   * // Dislike a song  
+   * const rating: PersonalRating = -1;
+   * 
+   * // No preference
+   * const rating: PersonalRating = 0;
+   * ```
+   */
+  type PersonalRating = 
+    /** Favorited/Liked - User enjoys this content */ 1 |
+    /** No rating - User has no preference */ 0 |
+    /** Disliked/Suggest less - User dislikes this content */ -1;
+
+  /**
+   * Foundation interface for all Apple Music API resources.
+   * 
+   * This base interface defines the common structure shared by all Apple Music
+   * API resources including songs, albums, playlists, and artists. Every resource
+   * has an ID, type, attributes, and optional relationships and metadata.
    */
   interface BaseResource {
+    /** Unique identifier for the resource. */
     id: string;
+    /** The resource type (e.g., 'songs', 'albums', 'playlists'). */
     type: string;
+    /** Direct URL to the resource in the API. */
     href: string;
+    /** Resource-specific data and properties. */
     attributes: Record<string, any>;
+    /** Optional connections to other related resources. */
     relationships?: Record<string, Relationship<Resource> | Array<Relationship<Resource>>>;
+    /** Additional metadata about the resource. */
     meta?: Record<string, any>;
+    /** Special relationship views for browsing related content. */
     views?: Record<string, View<Resource> | Relationship<Resource>>;
   }
 
   /**
-   * Base interface for media-type resources with common attributes.
+   * Base interface for media-type resources (songs, albums, etc.) with common attributes.
+   * 
+   * This interface provides a foundation for music content that shares common
+   * properties like artwork, artist information, and user interaction data.
    */
   interface BaseMediaResource extends BaseResource {
     attributes: {
+      /** Display name of the media item. */
       name: string;
+      /** Primary artist or creator name. */
       artistName: string;
+      /** Artwork imagery for the item. */
       artwork: Artwork;
+      /** Array of genre classifications. */
       genreNames: string[];
+      /** Content rating (clean/explicit) if applicable. */
       contentRating?: ContentRating;
+      /** Apple Music or iTunes Store URL for the item. */
       url: string;
-      personalRating?: number;
+      /** User's personal rating for the item. */
+      personalRating?: PersonalRating;
+      /** Whether the item exists in the user's library. */
       inLibrary?: boolean;
+      /** Whether the user has marked this as a favorite. */
       inFavorites?: boolean;
     };
   }
 
   /**
-   * Base interface for library resources with additional library-specific attributes.
+   * Base interface for user library resources with library-specific attributes.
+   * 
+   * Library resources are user-owned content that may have different properties
+   * than their catalog counterparts, such as custom metadata and sync status.
    */
   interface BaseLibraryResource extends BaseResource {
     attributes: {
+      /** When the item was added to the user's library. */
       dateAdded?: string;
-      personalRating?: number;
+      /** User's personal rating for the item. */
+      personalRating?: PersonalRating;
+      /** Whether the user has favorited this item. */
       inFavorites?: boolean;
     };
   }
@@ -179,7 +243,8 @@ declare namespace MusicKit {
       url: string;
       workName?: string;
       artistUrl?: string;
-      personalRating?: number;
+      /** User's personal rating for the song. */
+      personalRating?: PersonalRating;
       inLibrary?: boolean;
       inFavorites?: boolean;
       audioLocale?: string;
@@ -224,7 +289,8 @@ declare namespace MusicKit {
       workId?: string;
       workName?: string;
       artistUrl?: string;
-      personalRating?: number;
+      /** User's personal rating for the song. */
+      personalRating?: PersonalRating;
       inLibrary?: boolean;
       inFavorites?: boolean;
     };
@@ -294,7 +360,8 @@ declare namespace MusicKit {
       playParams: PlayParameters;
       stationProviderName: string;
       url: string;
-      personalRating?: number;
+      /** User's personal rating for the music video. */
+      personalRating?: PersonalRating;
       inLibrary?: boolean;
       inFavorites?: boolean;
     };
@@ -347,7 +414,8 @@ declare namespace MusicKit {
       upc?: string;
       editorialVideo?: EditorialVideo;
       url: string;
-      personalRating?: number;
+      /** User's personal rating for the album. */
+      personalRating?: PersonalRating;
       inLibrary?: boolean;
       inFavorites?: boolean;
     };
@@ -370,14 +438,33 @@ declare namespace MusicKit {
    * A resource object that represents a library album.
    * [MusicKit Swift Documentation](https://developer.apple.com/documentation/applemusicapi/libraryalbums/)
    */
-  interface LibraryAlbums extends Albums {
+  interface LibraryAlbums extends BaseLibraryResource {
     type: "library-albums";
-    attributes: Albums['attributes'] & {
-      dateAdded?: string;
-      // Library albums don't have some catalog-specific fields
+    attributes: BaseLibraryResource['attributes'] & {
+      // Album-specific attributes
+      artistName: string;
+      artistUrl?: string;
+      artwork: Artwork;
+      contentRating?: ContentRating;
+      copyright?: string;
+      editorialNotes?: EditorialNotes;
+      genreNames: string[];
+      isCompilation: boolean;
+      isPrerelease: boolean;
+      isComplete: boolean;
+      isMasteredForItunes: boolean;
+      isSingle: boolean;
+      name: string;
+      playParams?: PlayParameters;
+      recordLabel?: string;
       releaseDate?: string;
       trackCount: number;
-      personalRating?: number;
+      dateAdded?: string;
+      upc?: string;
+      editorialVideo?: EditorialVideo;
+      url: string;
+      /** User's personal rating for the album. */
+      personalRating?: PersonalRating;
       inFavorites?: boolean;
     };
     relationships?: {
@@ -393,12 +480,34 @@ declare namespace MusicKit {
    * A resource object that represents a library song.
    * [MusicKit Swift Documentation](https://developer.apple.com/documentation/applemusicapi/librarysongs/)
    */
-  interface LibrarySongs extends Songs {
+  interface LibrarySongs extends BaseLibraryResource {
     type: "library-songs";
-    attributes: Songs['attributes'] & {
-      // Library songs have all the same attributes as catalog songs
-      personalRating?: number;
+    attributes: BaseLibraryResource['attributes'] & {
+      // Song-specific attributes (catalog + library)
+      albumName?: string;
+      artistName: string;
+      artistUrl?: string;
+      artwork?: Artwork;
+      attribution?: string;
+      composerName?: string;
+      contentRating?: ContentRating;
+      discNumber?: number;
+      durationInMillis?: number;
+      editorialNotes?: EditorialNotes;
+      genreNames: string[];
+      hasLyrics?: boolean;
+      isrc?: string;
+      name: string;
+      playParams?: PlayParameters;
+      previews?: Preview[];
+      releaseDate?: string;
+      trackNumber?: number;
+      url: string;
+      workName?: string;
+      /** User's personal rating for the song. */
+      personalRating?: PersonalRating;
       inFavorites?: boolean;
+      audioLocale?: string;
     };
     relationships?: {
       albums?: Relationship<Albums>;
@@ -436,7 +545,8 @@ declare namespace MusicKit {
       isPublic: boolean;
       name: string;
       playParams: PlayParameters;
-      personalRating?: number;
+      /** User's personal rating for the playlist. */
+      personalRating?: PersonalRating;
       inFavorites?: boolean;
     };
     relationships?: {
@@ -461,7 +571,8 @@ declare namespace MusicKit {
       name: string;
       url: string;
       artwork?: Artwork;
-      personalRating?: number;
+      /** User's personal rating for the artist. */
+      personalRating?: PersonalRating;
       inLibrary?: boolean;
       inFavorites?: boolean;
     };
@@ -527,7 +638,8 @@ declare namespace MusicKit {
       versionHash?: string;
       trackTypes: Array<"music-videos" | "songs">;
       tags?: ["favorited"];
-      personalRating?: number;
+      /** User's personal rating for the playlist. */
+      personalRating?: PersonalRating;
       inLibrary?: boolean;
       inFavorites?: boolean;
     };

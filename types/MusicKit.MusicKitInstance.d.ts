@@ -1,17 +1,31 @@
 declare namespace MusicKit {
   /**
-   * This object provides access to a player instance, and through the player
-   * instance, access to control playback.
-   * [MusicKit.js Documentation](https://js-cdn.music.apple.com/musickit/v3/docs/index.html?path=/docs/reference-javascript-musickit-instance--page)
+   * The main MusicKit instance providing access to Apple Music functionality.
+   * 
+   * This is the primary interface for interacting with Apple Music services,
+   * including playback control, API access, user authentication, and library management.
+   * The instance extends the Player interface and adds additional capabilities
+   * specific to the full MusicKit experience.
+   * 
+   * @see [MusicKit.js Documentation](https://js-cdn.music.apple.com/musickit/v3/docs/index.html?path=/docs/reference-javascript-musickit-instance--page)
    */
   interface MusicKitInstance extends Player {
+    /** Platform and feature capabilities of the current environment. */
     capabilities: any;
+
     /**
-     * An instance of the MusicKit API.
+     * Apple Music API client for accessing catalog and library data.
+     * 
+     * Provides methods for searching, fetching, and managing Apple Music content
+     * including songs, albums, playlists, and user library items.
      */
     readonly api: API;
+
     /**
-     * An instance of the MusicKit API.
+     * Current audio quality setting for playback.
+     * 
+     * Indicates whether the player is using high-quality (256kbps) or
+     * standard quality (64kbps) audio streams.
      */
     readonly bitrate: PlaybackBitrate;
     /**

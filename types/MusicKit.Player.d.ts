@@ -1,30 +1,69 @@
 declare namespace MusicKit {
   /**
-   * The playback states of the music player.
+   * Enumeration of possible playback states for the music player.
+   * 
+   * These states represent the current condition of the audio player
+   * and help applications respond appropriately to playback changes.
    */
   enum PlaybackStates {
+    /** No media loaded or player not initialized. */
     none,
+    /** Media is being loaded or buffered. */
     loading,
+    /** Media is currently playing. */
     playing,
+    /** Playback is paused by user action. */
     paused,
+    /** Playback has been stopped. */
     stopped,
+    /** Media has reached the end. */
     ended,
+    /** Player is seeking to a new position. */
     seeking,
+    /** Player is waiting for more data to buffer. */
     waiting,
+    /** Playback has stalled due to insufficient buffer. */
     stalled,
+    /** Media playback has completed successfully. */
     completed,
   }
 
   /**
-   * The playback bit rate of the music player.
+   * Audio quality settings for music playback.
+   * 
+   * Higher bitrates provide better audio quality but consume more bandwidth.
+   * The actual bitrate may vary based on network conditions and content availability.
    */
   enum PlaybackBitrate {
+    /** High quality audio at 256 kbps. */
     HIGH = 256,
+    /** Standard quality audio at 64 kbps. */
     STANDARD = 64,
   }
 
+  /**
+   * Player repeat mode settings.
+   * 
+   * - `0` - No repeat (play queue once)
+   * - `1` - Repeat all (loop entire queue)  
+   * - `2` - Repeat one (loop current track)
+   */
   type PlayerRepeatMode = 0 | 1 | 2;
+
+  /**
+   * Player shuffle mode settings.
+   * 
+   * - `0` - Shuffle disabled (play in order)
+   * - `1` - Shuffle enabled (randomize order)
+   */
   type PlayerShuffleMode = 0 | 1;
+
+  /**
+   * Represents a position index in the media queue.
+   * 
+   * Zero-based index indicating which item in the playback queue
+   * is currently selected or being referenced.
+   */
   type MediaItemPosition = number;
 
   interface MediaItemAsset {

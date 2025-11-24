@@ -1,28 +1,50 @@
 declare namespace MusicKit {
 
     /**
-     * An array of media items to be played.
-     * [MusicKit.js Documentation](https://js-cdn.music.apple.com/musickit/v3/docs/index.html?path=/docs/reference-javascript-queue--page)
+     * Manages the playback queue of media items.
+     * 
+     * The Queue interface provides comprehensive control over the sequence of media
+     * items that will be played. It supports operations like adding, removing, and
+     * reordering tracks, as well as navigation through the queue.
+     * 
+     * @see [MusicKit.js Documentation](https://js-cdn.music.apple.com/musickit/v3/docs/index.html?path=/docs/reference-javascript-queue--page)
      */
     interface Queue {
         /**
-         * A Boolean value indicating whether the queue has no items.
+         * Whether the queue contains no media items.
+         * 
+         * Useful for determining if content needs to be loaded before playback can begin.
          */
         readonly isEmpty: boolean;
+
         /**
-         * An array of all the media items in the queue.
+         * All media items currently in the playback queue.
+         * 
+         * This array represents the complete sequence of tracks that will be played,
+         * including the currently playing item and any upcoming tracks.
          */
         items: MediaItem[];
+
         /**
-         * The number of items in the queue.
+         * Total number of items in the queue.
+         * 
+         * Equivalent to `items.length` but provided as a direct property for convenience.
          */
         readonly length: number;
+
         /**
-         * The next playable media item in the queue.
+         * The next media item that will play after the current item.
+         * 
+         * Returns `undefined` if there are no more playable items in the queue,
+         * which may happen at the end of a playlist when repeat mode is disabled.
          */
         readonly nextPlayableItem?: MediaItem | undefined;
+
         /**
-         * The next playable index in the queue.
+         * Index of the next playable item in the queue array.
+         * 
+         * This index corresponds to the position in the `items` array of the
+         * next track that will play.
          */
         readonly nextPlayableItemIndex: number;
         /**
